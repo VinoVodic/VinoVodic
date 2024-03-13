@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  back-end:
+    container_name: vino-back-end
+    build: ./back-end
+    command: gunicorn project.wsgi:application --bind 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    env_file:
+      - ./back-end/.env.prod
+    depends_on:
+      - back-end-setup
+  
+  back-end-setup:
+    build: ./back-end
+    command:
+      - /bin/sh
+      - -c
+      - |
+        python manage.py makemigrations --no-input
+        python manage.py migrate --no-input
+        python manage.py createsuperuser --no-input
+    env_file:
+      - ./back-end/.env.prod
+    depends_on:
+      - db
+
+  db:
+    container_name: vino-database
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5432:5432
+    env_file:
+      - ./back-end/.env.prod.db
+  
+  front-end:
+    container_name: vino-front-end
+    build: ./front-end
+    ports:
+      - 8080:8080
+    depends_on:
+      - back-end
+
+volumes:
+  postgres_data:
