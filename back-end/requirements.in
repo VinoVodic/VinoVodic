@@ -1,0 +1,13 @@
+django
+psycopg2-binary
+djangorestframework
+djangorestframework-simplejwt
+gunicorn
+whitenoise
+# ne treba za docker
+python-dotenv
+django-cors-headers
+# za testiranje
+factory-boy
+# injektor
+injector
